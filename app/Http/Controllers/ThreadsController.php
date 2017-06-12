@@ -12,6 +12,11 @@ class ThreadsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct(){
+      $this->middleware('auth')->except(['index','show']);//usuário precisa estar logado para cadastrar threads.
+    }
+
     public function index()
     {
       $threads = Thread::latest()->get();
@@ -26,7 +31,7 @@ class ThreadsController extends Controller
      */
     public function create()
     {
-        //
+      return view('threads.create');
     }
 
     /**
@@ -37,7 +42,19 @@ class ThreadsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+      $this->validate($request, [
+        'title'=>'required',
+        'body'=>'required',
+        'channel_id'=>'required|exists:channel,id'//busca da tabela channel
+      ]);
+      $thread = Thread::create([
+        'title'=>request('title'),
+        'channel_id'=>request('channel_id'),
+        'body'=>request('body'),
+        'user_id'=>auth()->id()
+      ]);
+      return redirect($thread->path());
     }
 
     /**
@@ -46,7 +63,7 @@ class ThreadsController extends Controller
      * @param  \App\Thread  $thread
      * @return \Illuminate\Http\Response
      */
-    public function show(Thread $thread)
+    public function show($channelId, Thread $thread)
     {
       return view('threads.show',compact('thread'));
     }

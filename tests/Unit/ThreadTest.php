@@ -42,4 +42,19 @@ class ThreadTest extends TestCase
       $this->assertCount(1,$this->thread->replies);//se encontrar pelo menos um postador
     }
 
+    /** @test Pode add comentário num post*/
+    function a_thread_belongs_to_a_channel(){
+      $thread = create('App\Thread');
+      $this->assertInstanceOf('App\Channel',$thread->channel);
+    }
+
+    /** @test Pode add comentário num post*/
+    function a_thread_can_make_a_string_path(){
+      $thread = create('App\Thread');
+
+      $this->assertEquals(
+        "/threads/{$thread->channel->slug}/{$thread->id}", $thread->path()
+      );
+      
+    }
 }
