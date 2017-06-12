@@ -52,6 +52,8 @@ class ThreadsController extends Controller
           'body' => 'required',
           'channel_id' => 'required|exists:channels,id'
       ]);
+
+      // dd($request->all());
       $thread = Thread::create([
           'user_id' => auth()->id(),
           'channel_id' => request('channel_id'),
