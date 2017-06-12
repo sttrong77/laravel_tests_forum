@@ -14,6 +14,6 @@ class ReplyTest extends TestCase
 
     $reply = factory('App\Reply')->create();
 
-    $this->assertInstanceOf('App\User', $reply->owner);
+    $this->assertInstanceOf('App\User', $reply->owner); //verifica se o usuário realizou comentário
   }
 }
