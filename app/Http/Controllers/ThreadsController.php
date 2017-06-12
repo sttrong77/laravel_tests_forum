@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Thread;
+use App\Channel;
 use Illuminate\Http\Request;
 
 class ThreadsController extends Controller
@@ -17,11 +18,14 @@ class ThreadsController extends Controller
       $this->middleware('auth')->except(['index','show']);//usuário precisa estar logado para cadastrar threads.
     }
 
-    public function index()
+    public function index(Channel $channel)
     {
-      $threads = Thread::latest()->get();
-
-      return view('threads.index',compact('threads'));
+      if ($channel->exists) {
+         $threads = $channel->threads()->latest()->get();
+     } else {
+         $threads = Thread::latest()->get();
+     }
+     return view('threads.index', compact('threads'));
     }
 
     /**
@@ -44,15 +48,15 @@ class ThreadsController extends Controller
     {
 
       $this->validate($request, [
-        'title'=>'required',
-        'body'=>'required',
-        'channel_id'=>'required|exists:channel,id'//busca da tabela channel
+          'title' => 'required',
+          'body' => 'required',
+          'channel_id' => 'required|exists:channels,id'
       ]);
       $thread = Thread::create([
-        'title'=>request('title'),
-        'channel_id'=>request('channel_id'),
-        'body'=>request('body'),
-        'user_id'=>auth()->id()
+          'user_id' => auth()->id(),
+          'channel_id' => request('channel_id'),
+          'title' => request('title'),
+          'body' => request('body')
       ]);
       return redirect($thread->path());
     }
