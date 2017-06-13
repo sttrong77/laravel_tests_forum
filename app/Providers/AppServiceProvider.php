@@ -16,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
     {
       // \View::share('channels', \App\Channel::all());
       \View::composer('*', function($view){
-        $view->with('channels', Channel::all());
+        $channels = \Cache::rememberForever('channels',function(){ //pegando do cache
+          return Channel::all();
+        });
+        $view->with('channels', $channels);
       });
     }
 
@@ -27,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+      if($this->app->isLocal()){ //ambiente local
+        $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
+      }
     }
 }
